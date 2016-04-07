@@ -5,10 +5,14 @@ An on-premises, bare-metal solution for deploying GPU-powered applications in co
 
 http://www.emergingstack.com/2016/01/10/Nvidia-GPU-plus-CoreOS-plus-Docker-plus-TensorFlow.html 
 
+(pinmarch added: Docker Hub https://hub.docker.com/r/pinmarch/nvidia-install/ )
+
 ### Prerequisites
 
 - CoreOS-compatible dedicated machine with vanilla CoreOS installed
 - Current-generation Nvidia GPU (tested with TitanX)
+- Current-generation Nvidia GPU (tested with GTX970 by pinmarch)
+- NVIDIA driver installer file (*.run)
 
 ### To Build
 
@@ -19,7 +23,7 @@ $ cd es-dev-stack/corenvidiadrivers
 ```
 
 ```
-$ docker build -t cuda .
+$ docker build -t nvidia-install .
 ```
 
 **GPU-enabled TensorFlow Image**
@@ -37,17 +41,15 @@ $ docker build -t tflowgpu .
 **Stage 1 - Install Nvidia Drivers & Register GPU Devices (One-Time)**
 
 ```
-# docker run -it --privileged cuda
+# docker run -it --rm -v /dev/:/dev/ --privileged nvidia-install
 ```
 
-```
-# ./mkdevs.sh
-```
+(./mkdevs.sh is executed in the previous command.)
 
 **Stage 2 - TensorFlow Docker Container with mapped GPU devices**
 
 ```
-$ docker run --device /dev/nvidia0:/dev/nvidia0 --device /dev/nvidia1:/dev/nvidia1 --device /dev/nvidiactl:/dev/nvidiactl --device /dev/nvidia-uvm:/dev/nvidia-uvm -it -p 8888:8888 --privileged tflowgpu
+$ docker run -v /dev/nvidia0:/dev/nvidia0 -v /dev/nvidia1:/dev/nvidia1 -v /dev/nvidiactl:/dev/nvidiactl -v /dev/nvidia-uvm:/dev/nvidia-uvm -it -p 8888:8888 tflowgpu
 ```
 
 ### To Test
