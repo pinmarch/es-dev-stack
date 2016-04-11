@@ -39,8 +39,11 @@ ENV LD_LIBRARY_PATH $CUDA_ROOT/lib:$CUDA_ROOT/lib64:/usr/lib/x86_64-linux-gnu:$L
 LABEL chainer.version="1.7.2"
 RUN LIBRARY_PATH=/opt/${drivertag} pip install chainer
 
+RUN apt-get -y install python-pandas python-matplotlib ipython ipython-notebook && \
+    apt-get autoclean
 
-WORKDIR /
+VOLUME /var/data/chainer
+WORKDIR /root
 
 CMD /bin/bash
 
